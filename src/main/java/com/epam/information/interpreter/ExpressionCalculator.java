@@ -1,17 +1,14 @@
 package com.epam.information.interpreter;
 
+import com.epam.information.exception.InformationHandlingException;
 import com.epam.information.interpreter.expressions.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class ExpressionCalculator {
     private static final String EXPRESSION_SEPARATOR = "\\p{Blank}+";
-    private static final int SECOND_CHAR_INDEX = 1;
 
-    public double calculate(String expression, Map<String, Double> parameters) {
+    public double calculate(String expression, Map<String, Double> parameters) throws InformationHandlingException {
         List<AbstractExpression> expressions = parse(expression, parameters);
         Context context = new Context();
         for (AbstractExpression terminal : expressions) {
@@ -20,7 +17,7 @@ public class ExpressionCalculator {
         return context.popValue();
     }
 
-    private List<AbstractExpression> parse(String expression, Map<String, Double> parameters) {
+    private List<AbstractExpression> parse(String expression, Map<String, Double> parameters) throws InformationHandlingException {
         List<AbstractExpression> expressions = new ArrayList<>();
         String expressionValue = removeBrackets(expression);
 
@@ -49,6 +46,8 @@ public class ExpressionCalculator {
                             if (parameters.containsKey(key)) {
                                 Double number = parameters.get(key);
                                 expressions.add(new NonTerminalExpression(number));
+                            } else {
+                                throw new InformationHandlingException("There is unknown variable in expression: " + key);
                             }
                         }
                 }

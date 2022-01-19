@@ -1,10 +1,10 @@
 package com.epam.information.parser.impl;
 
+import com.epam.information.interpreter.ExpressionCalculator;
 import com.epam.information.parser.Parser;
-import com.epam.information.entity.LeafType;
 import com.epam.information.entity.TextComponent;
 import com.epam.information.entity.impl.TextComposite;
-import com.epam.information.entity.impl.TextLeaf;
+import com.epam.information.entity.impl.Lexeme;
 import com.epam.information.parser.AbstractParser;
 
 import java.util.regex.Matcher;
@@ -21,20 +21,18 @@ public class SentenceParser extends AbstractParser {
     @Override
     public TextComponent parse(String text) {
         TextComposite composite = new TextComposite();
-
         Pattern pattern = Pattern.compile(LEAF_REGEX);
         Matcher matcher = pattern.matcher(text);
 
         while (matcher.find()) {
             String value = matcher.group();
-            TextLeaf leaf;
-
+            Lexeme lexeme;
             if (value.matches(EXPRESSION_REGEX)) {
-                leaf = new TextLeaf(value, LeafType.EXPRESSION);
+                lexeme = Lexeme.expression(value);
             } else {
-                leaf = new TextLeaf(value, LeafType.WORD);
+                lexeme = Lexeme.word(value);
             }
-            composite.add(leaf);
+            composite.add(lexeme);
         }
         return composite;
     }

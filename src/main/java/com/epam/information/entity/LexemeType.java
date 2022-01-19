@@ -1,6 +1,6 @@
 package com.epam.information.entity;
 
-public enum LeafType {
+public enum LexemeType {
     WORD,
     EXPRESSION
 }

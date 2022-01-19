@@ -21,7 +21,6 @@ public class TextParser extends AbstractParser {
             TextComponent paragraph = getSuccessor().parse(part);
             composite.add(paragraph);
         }
-
         return composite;
     }
 }

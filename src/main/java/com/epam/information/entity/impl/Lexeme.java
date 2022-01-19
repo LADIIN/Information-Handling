@@ -1,24 +1,30 @@
 package com.epam.information.entity.impl;
 
-import com.epam.information.entity.LeafType;
+import com.epam.information.entity.LexemeType;
 import com.epam.information.entity.TextComponent;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class TextLeaf implements TextComponent {
+public class Lexeme implements TextComponent {
     private final String value;
-    private final LeafType type;
+    private final LexemeType type;
 
-    public TextLeaf(String value, LeafType type) {
+    private Lexeme(String value, LexemeType type) {
         this.value = value;
         this.type = type;
     }
 
+    public static Lexeme word(String value) {
+        return new Lexeme(value, LexemeType.WORD);
+    }
+
+    public static Lexeme expression(String value) {
+        return new Lexeme(value, LexemeType.EXPRESSION);
+    }
+
     @Override
     public List<TextComponent> getComponents() {
-//        throw new UnsupportedOperationException("Can't use operation on leaf.");
-        return new ArrayList<>();
+        throw new UnsupportedOperationException("Can't use operation on leaf.");
     }
 
     @Override
@@ -31,8 +37,17 @@ public class TextLeaf implements TextComponent {
         throw new UnsupportedOperationException("Can't use operation on leaf.");
     }
 
-    public LeafType getType() {
+    @Override
+    public int size() {
+        return value.length();
+    }
+
+    public LexemeType getType() {
         return type;
+    }
+
+    public String getValue() {
+        return value;
     }
 
     @Override
@@ -43,8 +58,8 @@ public class TextLeaf implements TextComponent {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        TextLeaf textLeaf = (TextLeaf) o;
-        return value.equals(textLeaf.value) && type == textLeaf.type;
+        Lexeme lexeme = (Lexeme) o;
+        return value.equals(lexeme.value) && type == lexeme.type;
     }
 
     @Override

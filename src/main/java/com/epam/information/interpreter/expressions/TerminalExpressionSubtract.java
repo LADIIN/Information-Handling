@@ -6,7 +6,7 @@ import com.epam.information.interpreter.Context;
 public class TerminalExpressionSubtract implements AbstractExpression {
     @Override
     public void interpret(Context context) {
-        Double result = context.popValue() - context.popValue();
+        Double result = -context.popValue() + context.popValue();
         context.pushValue(result);
     }
 }

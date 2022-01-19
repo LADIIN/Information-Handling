@@ -6,7 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TextComposite implements TextComponent {
+    private static final String SPACE = " ";
     private final List<TextComponent> components = new ArrayList<>();
+
+    public TextComposite() {
+    }
+
+    public TextComposite(List<? extends TextComponent> components) {
+        this.components.addAll(components);
+    }
 
     @Override
     public List<TextComponent> getComponents() {
@@ -23,7 +31,12 @@ public class TextComposite implements TextComponent {
         components.remove(textComponent);
     }
 
-   
+
+    @Override
+    public int size() {
+        return components.size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -45,6 +58,11 @@ public class TextComposite implements TextComponent {
 
     @Override
     public String toString() {
-        return String.format("Components: %s", components);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (TextComponent component : components) {
+            stringBuilder.append(component);
+            stringBuilder.append(SPACE);
+        }
+        return stringBuilder.toString().trim();
     }
 }

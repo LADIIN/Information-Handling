@@ -1,9 +1,9 @@
 package com.epam.information.parser;
 
-import com.epam.information.entity.LeafType;
+import com.epam.information.entity.LexemeType;
 import com.epam.information.entity.TextComponent;
 import com.epam.information.entity.impl.TextComposite;
-import com.epam.information.entity.impl.TextLeaf;
+import com.epam.information.entity.impl.Lexeme;
 import com.epam.information.parser.impl.SentenceParser;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,8 +12,8 @@ public class SentenceParserTest {
     private static final String VALID_SENTENCE = "[10 x /] word!";
     private static final String Expression = "[10 x /]";
     private static final String WORD = "word!";
-    private static final TextComponent FIRST_COMPONENT = new TextLeaf(Expression, LeafType.EXPRESSION);
-    private static final TextComponent SECOND_COMPONENT = new TextLeaf(WORD, LeafType.WORD);
+    private static final TextComponent FIRST_COMPONENT = Lexeme.expression(Expression);
+    private static final TextComponent SECOND_COMPONENT = Lexeme.word(WORD);
 
     @Test
     public void testParseShouldReturnCorrectComponentWhenSentenceIsValid() {
