@@ -7,6 +7,8 @@ import java.util.*;
 
 public class ExpressionCalculator {
     private static final String EXPRESSION_SEPARATOR = "\\p{Blank}+";
+    private static final String BRACKETS_REGEX = "[\\[\\]]";
+    private static final String EMPTY_STRING = "";
 
     public double calculate(String expression, Map<String, Double> parameters) throws InformationHandlingException {
         List<AbstractExpression> expressions = parse(expression, parameters);
@@ -57,6 +59,6 @@ public class ExpressionCalculator {
     }
 
     private String removeBrackets(String expression) {
-        return expression.replaceAll("[\\[\\]]", "");
+        return expression.replaceAll(BRACKETS_REGEX, EMPTY_STRING);
     }
 }

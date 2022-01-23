@@ -18,7 +18,7 @@ public class TextComposite implements TextComponent {
 
     @Override
     public List<TextComponent> getComponents() {
-        return components;
+        return new ArrayList<>(components);
     }
 
     @Override
@@ -30,7 +30,6 @@ public class TextComposite implements TextComponent {
     public void remove(TextComponent textComponent) {
         components.remove(textComponent);
     }
-
 
     @Override
     public int size() {
@@ -46,7 +45,6 @@ public class TextComposite implements TextComponent {
             return false;
         }
         TextComposite that = (TextComposite) o;
-
         return components.equals(that.components);
     }
 

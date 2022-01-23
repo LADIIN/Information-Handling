@@ -1,89 +1,133 @@
 package com.epam.information.logic;
 
 import com.epam.information.entity.TextComponent;
+import com.epam.information.entity.impl.Lexeme;
 import com.epam.information.entity.impl.TextComposite;
 import com.epam.information.exception.InformationHandlingException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TextLogicTest {
     private static final TextLogic textLogic = new TextLogic();
+    private static final Lexeme FIRST_LEXEME = Lexeme.word("File");
+    private static final Lexeme SECOND_LEXEME = Lexeme.expression("[2 x *]");
+    private static final Lexeme THIRD_LEXEME = Lexeme.word("Megabytes.");
+    private static final Lexeme CALCULATED_EXPRESSION = Lexeme.word("4.0");
 
-    //TODO: Mock it
     @Test
     public void testRestoreShouldReturnCorrectTextWhenCompositeIsValid() {
-        String expected = "It has survived - not only (five) centuries, but also the leap into [13  2 +] electronic typesetting, remaining [3  5 +] essentially [15  3 /] unchanged. It was popularised in the [5 x *] with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." +
-                "\nIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using [2 3 * y +] Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using (Content here), content here, making it look like readable English." +
-                "\nIt is a [1200  5 /] established fact that a reader will be of a page when looking at its layout." +
-                "\nBye.";
-        TextComposite composite = (TextComposite) textLogic.parse(expected);
-
+        //given
+        String expected = "File [2 x *] Megabytes.";
+        TextComposite composite = createTextComposite();
         //when
         String actual = textLogic.restore(composite);
-
         //then
         Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testCalculateExpressionsShouldCalculateCorrectlyWhenCompositeIsValid() throws InformationHandlingException {
-        String text = "It has survived - not only (five) centuries, but also the leap into [13  2 +] electronic typesetting, remaining [3  5 +] essentially [15  3 /] unchanged. It was popularised in the [5 x *] with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." +
-                "\nIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using [2 3 * y +] Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using (Content here), content here, making it look like readable English." +
-                "\nIt is a [1200  5 /] established fact that a reader will be of a page when looking at its layout." +
-                "\nBye.";
-
-        String parsedText = "It has survived - not only (five) centuries, but also the leap into 15.0 electronic typesetting, remaining 8.0 essentially 5.0 unchanged. It was popularised in the 10.0 with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." +
-                "\nIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using 9.0 Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using (Content here), content here, making it look like readable English." +
-                "\nIt is a 240.0 established fact that a reader will be of a page when looking at its layout." +
-                "\nBye.";
-
+        //given
         Map<String, Double> parameters = new HashMap<>();
         parameters.put("x", 2.0);
         parameters.put("y", 3.0);
-
-        TextComposite composite = (TextComposite) textLogic.parse(text);
-        TextComponent expected = textLogic.parse(parsedText);
-
+        TextComposite composite = createTextComposite();
         //when
         TextComponent actual = textLogic.calculateExpressions(composite, parameters);
-
         //then
-        System.out.println(textLogic.restore(actual));
+        TextComponent expected = createExpectedTextCompositeToCalculateExpressionsTest();
         Assert.assertEquals(expected, actual);
     }
 
-//    @Test
-//    public void testSortWordsInSentencesShouldSortByLengthWhenCompositeIsValid() {
-//        //given
-//        String text = "Short Looongest Looong.\nShort Looongest Looong.";
-//        String sorted = "Short Looong. Looongest\nShort Looong. Looongest";
-//        TextComposite composite = (TextComposite) textLogic.parse(text);
-//        TextComposite expected = (TextComposite) textLogic.parse(sorted);
-//
-//        //when
-//        TextComposite actual = textLogic.sortWordsInSentencesByLength(composite);
-//
-//        //then
-//        System.out.println(actual);
-//        Assert.assertEquals(expected, actual);
-//    }
+    @Test
+    public void testSortLexemesInSentencesShouldSortByLengthWhenCompositeIsValid() {
+        //given
+        TextComposite composite = createUnsortedTextComposite();
+        //when
+        TextComposite actual = textLogic.sortWordsInSentencesByLength(composite);
+        //then
+        TextComposite expected = createSortedTextCompositeToSortLexemesTest();
+        Assert.assertEquals(expected, actual);
+    }
 
     @Test
     public void testSortParagraphsShouldSortByAmountOfSentencesWhenCompositeIsValid() {
         //given
-        String text = "Sentence. Sentence. Sentence!\nSentence.\nSentence. Sentence.";
-        String sorted = "Sentence. \nSentence. Sentence.\nSentence. Sentence. Sentence!";
-        TextComposite composite = (TextComposite) textLogic.parse(text);
-        TextComposite expected = (TextComposite) textLogic.parse(sorted);
-
+        TextComposite composite = createUnsortedTextCompositeToSortParagraphsTest();
         //when
         TextComposite actual = textLogic.sortParagraphsBySentenceAmount(composite);
-
         //then
-        System.out.println(actual);
+        TextComposite expected = createSortedTextCompositeToSortParagraphsTest();
         Assert.assertEquals(expected, actual);
+    }
+
+    private TextComposite createTextComposite() {
+        List<Lexeme> lexemes = Arrays.asList(FIRST_LEXEME, SECOND_LEXEME, THIRD_LEXEME);
+        TextComposite sentence = new TextComposite(lexemes);
+        TextComposite paragraph = new TextComposite();
+        paragraph.add(sentence);
+        TextComposite text = new TextComposite();
+        text.add(paragraph);
+        return text;
+    }
+
+    private TextComposite createExpectedTextCompositeToCalculateExpressionsTest() {
+        List<Lexeme> lexemes = Arrays.asList(FIRST_LEXEME, CALCULATED_EXPRESSION, THIRD_LEXEME);
+        TextComposite sentence = new TextComposite(lexemes);
+        TextComposite paragraph = new TextComposite();
+        paragraph.add(sentence);
+        TextComposite text = new TextComposite();
+        text.add(paragraph);
+        return text;
+    }
+
+    private TextComposite createUnsortedTextComposite() {
+        List<Lexeme> lexemes = Arrays.asList(Lexeme.word("Longest"), Lexeme.word("short"), Lexeme.word("longer"));
+        TextComposite sentence = new TextComposite(lexemes);
+        TextComposite paragraph = new TextComposite();
+        paragraph.add(sentence);
+        TextComposite text = new TextComposite();
+        text.add(paragraph);
+        return text;
+    }
+
+    private TextComposite createSortedTextCompositeToSortLexemesTest() {
+        List<Lexeme> lexemes = Arrays.asList(Lexeme.word("short"), Lexeme.word("longer"), Lexeme.word("Longest"));
+        TextComposite sentence = new TextComposite(lexemes);
+        TextComposite paragraph = new TextComposite();
+        paragraph.add(sentence);
+        TextComposite text = new TextComposite();
+        text.add(paragraph);
+        return text;
+    }
+
+    private TextComposite createUnsortedTextCompositeToSortParagraphsTest() {
+        List<Lexeme> lexemes = Arrays.asList(FIRST_LEXEME, SECOND_LEXEME, THIRD_LEXEME);
+        TextComposite sentence = new TextComposite(lexemes);
+        TextComposite firstParagraph = new TextComposite();
+        firstParagraph.add(sentence);
+        firstParagraph.add(sentence);
+        TextComposite secondParagraph = new TextComposite();
+        secondParagraph.add(sentence);
+        TextComposite text = new TextComposite();
+        text.add(firstParagraph);
+        text.add(secondParagraph);
+        return text;
+    }
+
+    private TextComposite createSortedTextCompositeToSortParagraphsTest() {
+        List<Lexeme> lexemes = Arrays.asList(FIRST_LEXEME, SECOND_LEXEME, THIRD_LEXEME);
+        TextComposite sentence = new TextComposite(lexemes);
+        TextComposite firstParagraph = new TextComposite();
+        firstParagraph.add(sentence);
+        firstParagraph.add(sentence);
+        TextComposite secondParagraph = new TextComposite();
+        secondParagraph.add(sentence);
+        TextComposite text = new TextComposite();
+        text.add(secondParagraph);
+        text.add(firstParagraph);
+        return text;
     }
 }
